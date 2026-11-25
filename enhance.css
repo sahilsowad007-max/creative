@@ -1,0 +1,315 @@
+/* Interaction layer on top of the pen export. Layout comes from the export's inline styles;
+   everything here uses properties the export never sets (translate / scale / rotate / filter / shadows),
+   so it can't shift the pen layout. Selectors key off the pen layer names. */
+:root{--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1)}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{background:#fff;margin:0}
+[data-pencil-name="Care Guide Homepage"]{margin:0 auto;overflow:visible!important}
+/* full-bleed section backgrounds when the screen is wider than the 1440 design (clip-path keeps the bleed horizontal only) */
+/* (a pseudo-element, not clip-path: clip-path would also clip the fixed nav that lives inside the hero) */
+[data-pencil-name="Care Guide Homepage"]>div{position:relative;overflow-x:visible!important;overflow-y:clip!important}
+[data-pencil-name="Care Guide Homepage"]>div::before{content:"";position:absolute;top:0;bottom:0;left:-100vmax;right:-100vmax;background:var(--sbg,transparent);z-index:-1;pointer-events:none}
+.cg-wide [data-pencil-name="Hero Line Art"],.cg-wide [data-pencil-name="Celebration Line Art"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 90px,#000 calc(100% - 90px),transparent);mask-image:linear-gradient(90deg,transparent,#000 90px,#000 calc(100% - 90px),transparent)}
+:focus-visible{outline:3px solid #E84D1C!important;outline-offset:3px}
+
+
+/* ---- nav: fixed, turns glass on scroll ---- */
+[data-pencil-name="Hero"]{padding-top:102px!important}
+[data-pencil-name="Nav"]{position:fixed!important;top:0;left:0;right:0;width:auto!important;z-index:150!important;
+  padding-left:var(--pd,80px)!important;padding-right:var(--pd,80px)!important;
+  transition:background .4s,padding .4s var(--ease),box-shadow .4s,backdrop-filter .4s}
+/* once you scroll, the nav floats as a glass capsule over the content */
+[data-pencil-name="Nav"]{transition:background .4s,top .4s var(--ease),left .4s var(--ease),right .4s var(--ease),padding .4s var(--ease),border-radius .4s,box-shadow .4s,border-color .4s}
+body.scrolled [data-pencil-name="Nav"]{top:14px;left:calc(var(--pd,80px) - 30px);right:calc(var(--pd,80px) - 30px);
+  padding:12px 30px!important;border-radius:999px;background:rgba(10,15,31,.55);border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(22px) saturate(1.6);-webkit-backdrop-filter:blur(22px) saturate(1.6);box-shadow:0 14px 40px rgba(10,15,31,.28),inset 0 1px 0 rgba(255,255,255,.18)}
+/* the testimonial section keeps its height when a shorter testimonial is shown, so the arrows never slip under the next section */
+[data-pencil-name="Leadership"]{min-height:855px}
+[data-pencil-name="Links"]>div{position:relative;cursor:pointer;transition:color .3s}
+[data-pencil-name="Links"]>div:not(.on){color:#B4BACB!important;font-weight:400!important}
+[data-pencil-name="Links"]>div:hover,[data-pencil-name="Links"]>div.on{color:#fff!important}
+[data-pencil-name="Links"]>div::after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:100%;background:#F0521E;transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+[data-pencil-name="Links"]>div:hover::after,[data-pencil-name="Links"]>div.on::after{transform:scaleX(1);transform-origin:left}
+
+/* ---- buttons / links ---- */
+.cg-btn{cursor:pointer;position:relative;overflow:hidden;isolation:isolate;transition:translate .4s var(--spring),scale .4s var(--spring),box-shadow .4s,filter .3s}
+.cg-btn:hover{translate:0 -3px;scale:1.04;box-shadow:0 14px 30px rgba(240,82,30,.35);filter:brightness(1.06)}
+.cg-btn:active{scale:.97}
+.cg-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:cg-rip .6s ease-out forwards;pointer-events:none;z-index:5}
+@keyframes cg-rip{to{transform:scale(4);opacity:0}}
+.cg-link{cursor:pointer}
+.cg-link svg{transition:translate .35s var(--ease)}.cg-link:hover svg{translate:6px 0}
+.cg-link:hover>*{opacity:.85}
+
+/* ---- reveal on scroll ---- */
+.cg-rv{opacity:0;translate:0 34px;transition:opacity .9s var(--ease),translate .9s var(--ease);transition-delay:var(--d,0ms)}
+.cg-rv.cg-l{translate:-50px 0}.cg-rv.cg-r{translate:50px 0}.cg-rv.cg-z{translate:0 0;scale:.92}
+.cg-rv.in{opacity:1;translate:0 0;scale:1}
+
+/* ---- hero ---- */
+[data-pencil-name="Hero Team Image"]{transition:transform .35s ease-out}
+[data-pencil-name^="Glass Chip"]{animation:cg-float 6s ease-in-out infinite;transition:background-color .3s;cursor:default}
+[data-pencil-name^="Glass Chip"]:hover{background-color:#FFFFFF38!important}
+[data-pencil-name="Glass Chip AI automation"]{animation-delay:-2s}[data-pencil-name="Glass Chip Dhaka, since 2022"]{animation-delay:-4s}
+@keyframes cg-float{50%{translate:0 -12px}}
+[data-pencil-name^="Badge "]{transition:transform .5s var(--spring),border-color .3s,background-color .3s;cursor:default}
+[data-pencil-name^="Badge "]:hover{transform:scale(1.2) rotate(-8deg)}
+[data-pencil-name="Beacon Ring"]{animation:cg-beacon 6s ease-in-out infinite}
+@keyframes cg-beacon{50%{opacity:.45}}
+.cg-orbit{position:absolute;width:0;height:0;animation:cg-spin var(--dur,80s) linear infinite}
+.cg-orbit .cg-ico{animation:cg-spin var(--dur,80s) linear infinite reverse}
+.cg-orbit [data-pencil-name="Orbit Dashed"]{pointer-events:none}
+[data-pencil-name="Play Button"]{cursor:pointer;transition:scale .4s var(--spring)}
+[data-pencil-name="Play Button"]::before,[data-pencil-name="Play Button"]::after{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);animation:cg-ring 2.4s ease-out infinite;pointer-events:none}
+[data-pencil-name="Play Button"]::after{animation-delay:1.2s}
+@keyframes cg-ring{to{transform:scale(1.8);opacity:0}}
+[data-pencil-name="Play Button"]:hover{scale:1.1}
+[data-pencil-name="Play Circle"]{transition:background-color .3s}[data-pencil-name="Play Button"]:hover [data-pencil-name="Play Circle"]{background-color:#F0521E!important}
+[data-pencil-name="Play Button"]:hover [data-pencil-name="Play Icon"] path{fill:#fff}
+[data-pencil-name="Eyebrow"] [data-pencil-name="Rule"]{transform-origin:left;animation:cg-grow 1s var(--ease) both .3s}
+@keyframes cg-grow{from{transform:scaleX(0)}}
+.cg-w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em}
+.cg-w b{display:inline-block;font-weight:inherit;transform:translateY(115%);animation:cg-up .9s var(--ease) forwards;animation-delay:calc(var(--i)*70ms + 250ms)}
+@keyframes cg-up{to{transform:none}}
+
+/* ---- title rule draws in ---- */
+[data-pencil-name="Title Rule"] [data-pencil-name="Line"]{transform-origin:left;transition:transform 1.1s var(--ease) .3s}
+.cg-tb:not(.in) [data-pencil-name="Title Rule"] [data-pencil-name="Line"]{transform:scaleX(0)}
+
+/* ---- services cards ---- */
+[data-pencil-name="Row 1"]>div,[data-pencil-name="Row 2"]>div{transition:transform .35s var(--ease),box-shadow .4s;will-change:transform;position:relative}
+[data-pencil-name="Row 1"]>div:hover,[data-pencil-name="Row 2"]>div:hover{box-shadow:0 26px 60px rgba(15,20,37,.18)}
+[data-pencil-name="Row 1"]>div::after,[data-pencil-name="Row 2"]>div::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(240,82,30,.16),transparent 45%);opacity:0;transition:opacity .35s}
+[data-pencil-name="Row 1"]>div:hover::after,[data-pencil-name="Row 2"]>div:hover::after{opacity:1}
+/* selection state: the navy "selected" card follows the pointer — it fills in from where you enter and jumps */
+.cg-sv{overflow:hidden!important;background-color:#F5F6F9!important;cursor:pointer}
+.cg-sv::before{content:"";position:absolute;inset:0;background:#0A0F1F;clip-path:circle(0% at var(--mx,50%) var(--my,100%));transition:clip-path .75s var(--ease);pointer-events:none}
+.cg-sv.sel::before{clip-path:circle(150% at var(--mx,50%) var(--my,100%))}
+.cg-sv>:not([data-pencil-name="Beacon Ring"]){position:relative;z-index:1}
+.cg-sv.sel{box-shadow:0 26px 60px rgba(10,15,31,.3)}
+.cg-sv [data-pencil-name="Title"],.cg-sv [data-pencil-name="Description"],.cg-sv [data-pencil-name="Top"] [data-pencil-name="Number"],.cg-sv [data-pencil-name="Icon Badge"],.cg-sv [data-pencil-name="Icon"] path{transition:color .5s,background-color .5s,fill .5s}
+.cg-sv:not(.sel) [data-pencil-name="Title"]{color:#0F1425!important}
+.cg-sv:not(.sel) [data-pencil-name="Description"],.cg-sv:not(.sel) [data-pencil-name="Top"] [data-pencil-name="Number"]{color:#5A6072!important}
+.cg-sv:not(.sel) [data-pencil-name="Icon Badge"]{background-color:#FFF0EA!important}
+.cg-sv:not(.sel) [data-pencil-name="Icon"] path{fill:#F0521E!important}
+.cg-sv.sel [data-pencil-name="Title"]{color:#fff!important}
+.cg-sv.sel [data-pencil-name="Description"],.cg-sv.sel [data-pencil-name="Top"] [data-pencil-name="Number"]{color:#B4BACB!important}
+.cg-sv.sel [data-pencil-name="Icon Badge"]{background-color:#F0521E!important}
+.cg-sv.sel [data-pencil-name="Icon"] path{fill:#fff!important}
+.cg-sv [data-pencil-name="Beacon Ring"]{animation:none;opacity:0;transition:opacity .6s}
+.cg-sv.sel [data-pencil-name="Beacon Ring"]{opacity:1;animation:cg-beacon 6s ease-in-out infinite}
+.cg-jump{animation:cg-jump .55s var(--spring)}
+@keyframes cg-jump{35%{translate:0 -16px}}
+[data-pencil-name="Icon Badge"]{transition:transform .5s var(--spring)}
+[data-pencil-name="Row 1"]>div:hover [data-pencil-name="Icon Badge"],[data-pencil-name="Row 2"]>div:hover [data-pencil-name="Icon Badge"]{transform:rotate(-10deg) scale(1.12)}
+[data-pencil-name="Number"]{transition:translate .5s var(--spring)}
+[data-pencil-name="Row 1"]>div:hover>[data-pencil-name="Top"] [data-pencil-name="Number"],[data-pencil-name="Row 2"]>div:hover>[data-pencil-name="Top"] [data-pencil-name="Number"]{translate:-4px 0}
+[data-pencil-name="Read More"]{cursor:pointer}[data-pencil-name="Read More"] svg{transition:translate .35s var(--ease)}
+[data-pencil-name="Row 1"]>div:hover [data-pencil-name="Read More"] svg,[data-pencil-name="Row 2"]>div:hover [data-pencil-name="Read More"] svg,[data-pencil-name^="Post Card"]:hover [data-pencil-name="Read More"] svg,[data-pencil-name="Read More"]:hover svg{translate:6px 0}
+
+/* ---- about ---- */
+[data-pencil-name="About Image"]{transition:scale 1s var(--ease)}[data-pencil-name="About Image"]:hover{scale:1.02}
+[data-pencil-name="Orbit Ring"]{animation:cg-spin 80s linear infinite}[data-pencil-name="Orbit Ring"]+[data-pencil-name="Orbit Ring"]{animation-direction:reverse}
+@keyframes cg-spin{to{rotate:360deg}}
+[data-pencil-name^="Orbit Badge"]{transition:transform .5s var(--spring),background-color .3s}[data-pencil-name^="Orbit Badge"]:hover{transform:scale(1.2)}
+[data-pencil-name="Years Badge"]{animation:cg-float 7s ease-in-out infinite}
+[data-pencil-name="Serving Callout"]{transition:translate .45s var(--spring),box-shadow .4s}[data-pencil-name="Serving Callout"]:hover{translate:8px 0;box-shadow:0 14px 30px rgba(240,82,30,.18)}
+[data-pencil-name="Column A"]>div,[data-pencil-name="Column B"]>div{transition:translate .45s var(--spring),box-shadow .4s,outline-color .3s;cursor:default}
+[data-pencil-name="Column A"]>div:hover,[data-pencil-name="Column B"]>div:hover{translate:0 -8px;box-shadow:0 20px 40px rgba(240,82,30,.16)}
+
+[data-pencil-name="Care Guide Homepage"]>[data-pencil-name="About"]{min-height:1035px} /* (the footer also has a layer named "About") */
+/* About title:"A Reliable Partner for Operations," on one line (40px needs ~681px, the column is 604px) */
+[data-pencil-name="About"] [data-pencil-name="Title Line 1"],[data-pencil-name="About"] [data-pencil-name="Title Line 2"]{font-size:35px!important;line-height:1.2!important;white-space:nowrap}
+
+/* ---- stats ---- */
+[data-pencil-name="Stats Row"]>div{transition:translate .5s var(--spring),box-shadow .4s}[data-pencil-name="Stats Row"]>div:hover{translate:0 -8px}
+
+/* ---- leadership / why / careers glass ---- */
+/* quote badge: a full 360° turn every few seconds, and again on hover */
+[data-pencil-name="Quote Badge"],[data-pencil-name="Quote Icon"]{animation:cg-turn 4.5s var(--ease) infinite}
+.cg-spin1{animation:cg-turn1 .9s var(--ease)!important}
+@keyframes cg-turn{0%,55%{rotate:0deg}100%{rotate:360deg}}
+@keyframes cg-turn1{from{rotate:0deg}to{rotate:360deg}}
+[data-pencil-name="Leadership"] [data-pencil-name="Quote"],[data-pencil-name="Leadership"] [data-pencil-name="Quote Detail"],[data-pencil-name="Leadership"] [data-pencil-name="Author"]{transition:opacity .26s,translate .26s}
+.cg-out{opacity:0!important;translate:0 10px}
+/* testimonial glass card:tilts toward the pointer with a moving highlight */
+.cg-card{position:relative;transform-style:preserve-3d;transition:transform .3s ease-out,box-shadow .3s}
+.cg-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(460px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.55),transparent 55%);opacity:0;transition:opacity .35s;mix-blend-mode:soft-light}
+.cg-card.hot::after{opacity:1}
+.cg-card.hot{box-shadow:0 30px 70px rgba(15,20,37,.18)}
+[data-pencil-name="CEO Portrait"]{transition:scale 1s var(--ease)}
+[data-pencil-name="Previous Review"],[data-pencil-name="Next Review"]{cursor:pointer;transition:scale .4s var(--spring),background-color .3s}
+[data-pencil-name="Previous Review"]:hover,[data-pencil-name="Next Review"]:hover{scale:1.12;background-color:#F0521E!important}
+[data-pencil-name="Glass Tile"]{transition:translate .5s var(--spring),scale .5s var(--spring),background-color .3s,outline-color .3s}
+[data-pencil-name="Glass Tile"]:hover{translate:0 -12px;scale:1.03;background-color:#FFFFFF2E!important}
+[data-pencil-name="Requirement Cards"] [data-pencil-name^="Card "]{transition:translate .5s var(--spring),rotate .5s var(--spring),box-shadow .4s,background-color .4s}
+[data-pencil-name="Requirement Cards"] [data-pencil-name^="Card "]:hover{translate:0 -10px;rotate:-1deg;background-color:#FFFFFF2B!important;box-shadow:0 26px 50px rgba(240,82,30,.28)}
+[data-pencil-name="Number Badge"]{transition:transform .5s var(--spring)}
+[data-pencil-name^="Card "]:hover [data-pencil-name="Number Badge"]{transform:scale(1.15) rotate(10deg)}
+[data-pencil-name="Plus Vertical"],[data-pencil-name="Plus Horizontal"]{transition:scale .8s var(--ease)}
+[data-pencil-name="Requirement Cards"]:hover [data-pencil-name="Plus Vertical"]{scale:1 1.06}[data-pencil-name="Requirement Cards"]:hover [data-pencil-name="Plus Horizontal"]{scale:1.06 1}
+
+/* ---- culture carousel ---- */
+[data-pencil-name="Card Carousel"]{touch-action:pan-y;user-select:none}
+/* each card glides between stack positions */
+[data-pencil-name="Card Carousel"]>div{cursor:pointer;will-change:left,top,transform;
+  transition:left .9s var(--ease),top .9s var(--ease),width .9s var(--ease),height .9s var(--ease),transform .9s var(--ease),box-shadow .9s var(--ease),opacity .32s ease}
+.cg-swap{animation:cg-swap .6s var(--ease)}
+@keyframes cg-swap{from{opacity:.4;scale:.95}}
+/* event arrows: outlined and empty; the orange fill grows in from the centre on hover and goes deeper when pressed */
+[data-pencil-name="Previous"],[data-pencil-name="Next"]{cursor:pointer;position:relative;overflow:hidden;isolation:isolate;background-color:transparent!important;outline:1.5px solid #D3D8E4!important;
+  transition:scale .4s var(--spring),outline-color .3s;box-shadow:none!important;filter:none!important;translate:none!important}
+[data-pencil-name="Previous"]::before,[data-pencil-name="Next"]::before{content:"";position:absolute;inset:0;border-radius:50%;background:#F0521E;transform:scale(0);transition:transform .45s var(--ease),background-color .2s;z-index:-1}
+[data-pencil-name="Previous"] svg path,[data-pencil-name="Next"] svg path{fill:#0F1425!important;transition:fill .3s}
+[data-pencil-name="Previous"]:hover,[data-pencil-name="Next"]:hover,[data-pencil-name="Previous"]:focus-visible,[data-pencil-name="Next"]:focus-visible{scale:1.1;outline-color:#F0521E!important}
+[data-pencil-name="Previous"]:hover::before,[data-pencil-name="Next"]:hover::before,[data-pencil-name="Previous"]:focus-visible::before,[data-pencil-name="Next"]:focus-visible::before{transform:scale(1)}
+[data-pencil-name="Previous"]:hover svg path,[data-pencil-name="Next"]:hover svg path,[data-pencil-name="Previous"]:focus-visible svg path,[data-pencil-name="Next"]:focus-visible svg path{fill:#fff!important}
+[data-pencil-name="Previous"]:active,[data-pencil-name="Next"]:active{scale:.94}
+[data-pencil-name="Previous"]:active::before,[data-pencil-name="Next"]:active::before{background:#C93A0E;transform:scale(1)}
+[data-pencil-name="Pagination"]>div{cursor:pointer;transition:width .4s var(--ease),background-color .3s}
+[data-pencil-name="Celebration Line Art"]>*{animation:cg-sway 7s ease-in-out infinite}
+[data-pencil-name="Party Popper Large"]{animation:cg-pop 3s ease-in-out infinite!important}
+@keyframes cg-sway{50%{translate:0 -10px}}@keyframes cg-pop{50%{rotate:-8deg;scale:1.06}}
+
+/* ---- blog ---- */
+[data-pencil-name^="Post Card"]{transition:translate .5s var(--ease),box-shadow .4s}
+[data-pencil-name^="Post Card"]:hover{translate:0 -6px;box-shadow:0 24px 50px rgba(15,20,37,.22)}
+[data-pencil-name="Glass Panel"]{transition:translate .6s var(--spring),box-shadow .4s}
+[data-pencil-name^="Post Card"]:hover [data-pencil-name="Glass Panel"]{translate:0 -12px;box-shadow:0 24px 46px rgba(15,20,37,.22)}
+
+/* ---- footer ---- */
+[data-pencil-name="Footer Top"] div[style*="gap: 14px"]>div:not([data-pencil-name="Heading"]){position:relative;cursor:pointer;width:fit-content;transition:color .3s,translate .35s var(--ease)}
+[data-pencil-name="Footer Top"] div[style*="gap: 14px"]>div:not([data-pencil-name="Heading"]):hover{color:#fff!important;translate:12px 0}
+[data-pencil-name="Social Links"]>div{cursor:pointer;transition:translate .45s var(--spring),rotate .45s var(--spring),background-color .3s}
+[data-pencil-name="Social Links"]>div:hover{translate:0 -6px;rotate:8deg;background-color:#F0521E!important}
+[data-pencil-name="Input Pill"]{transition:box-shadow .3s}[data-pencil-name="Input Pill"]:focus-within{box-shadow:0 0 0 4px rgba(240,82,30,.3)}
+[data-pencil-name="Input Pill"] input{background:none;border:0;color:#FFFFFFE6;font:16px "Fira Sans",system-ui,sans-serif;width:200px;padding:0}
+[data-pencil-name="Input Pill"] input::placeholder{color:#FFFFFFE6}[data-pencil-name="Input Pill"] input:focus{outline:0}
+#cg-ok{color:#FF8A5C;font:600 15px "Fira Sans",sans-serif;margin-top:12px}
+[data-pencil-name="Lighthouse Line Art"]{animation:cg-float 8s ease-in-out infinite}
+
+/* ---- video dialog ---- */
+#cg-dlg{border:0;border-radius:24px;padding:36px;background:#0A0F1F;color:#fff;max-width:520px;width:calc(100% - 32px);font-family:"Fira Sans",sans-serif}
+#cg-dlg::backdrop{background:rgba(10,15,31,.7);backdrop-filter:blur(8px)}
+#cg-dlg[open]{animation:cg-pin .5s var(--spring)}@keyframes cg-pin{from{transform:scale(.85);opacity:0}}
+#cg-dlg h3{font:700 24px Poppins,sans-serif;margin:0 0 10px}#cg-dlg p{color:#B4BACB;margin:0 0 22px}
+#cg-dlg button{background:#F0521E;color:#fff;border:0;border-radius:999px;padding:14px 28px;font:600 16px "Fira Sans",sans-serif;cursor:pointer}
+
+/* =====================================================================================================
+   RESPONSIVE. >1100px: the 1440 design is scaled (see fit() in enhance.js).
+   <=1100px (.cg-fluid, tablet) and <=640px (.cg-sm, phone): the layout reflows into single columns.
+   ===================================================================================================== */
+.cg-burger{display:none;background:none;border:0;width:44px;height:44px;border-radius:50%;cursor:pointer;position:relative;flex:none}
+.cg-burger i,.cg-burger i::before,.cg-burger i::after{position:absolute;left:12px;width:20px;height:2px;background:#fff;border-radius:2px;transition:transform .35s var(--ease),opacity .2s}
+.cg-burger i{top:21px}.cg-burger i::before{content:"";top:-6px;left:0}.cg-burger i::after{content:"";top:6px;left:0}
+.cg-menu .cg-burger i{background:transparent}.cg-menu .cg-burger i::before{transform:translateY(6px) rotate(45deg)}.cg-menu .cg-burger i::after{transform:translateY(-6px) rotate(-45deg)}
+
+.cg-fluid{--fv:64px}.cg-sm{--fv:48px}
+.cg-fluid [data-pencil-name="Care Guide Homepage"]{width:100%!important}
+.cg-fluid [data-pencil-name="Care Guide Homepage"]>div{padding-left:var(--pd)!important;padding-right:var(--pd)!important}
+.cg-fluid [data-pencil-name="Care Guide Homepage"]>div:not([data-pencil-name="Hero"]):not([data-pencil-name="Footer"]){padding-top:var(--fv)!important;padding-bottom:var(--fv)!important;min-height:0!important}
+/* page-coordinate decoration is hidden; the pieces that matter were re-parented by JS */
+.cg-fluid [data-pencil-name="Care Guide Homepage"]>div>[style*="position: absolute"]:not([data-pencil-name="Review Pagination"]){display:none!important}
+.cg-fluid [data-pencil-name="Title Line 1"],.cg-fluid [data-pencil-name="Title Line 2"],.cg-fluid [data-pencil-name="Title Line"]{font-size:clamp(25px,5vw,36px)!important;line-height:1.2!important;white-space:normal!important;width:100%!important}
+.cg-fluid [data-pencil-name="Title Block"],.cg-fluid [data-pencil-name="Heading"]{width:100%!important}
+.cg-fluid [data-pencil-name="Header"]{flex-direction:column!important;align-items:flex-start!important;gap:20px!important}
+
+/* nav */
+.cg-fluid [data-pencil-name="Nav"]{padding-top:14px!important;padding-bottom:14px!important}
+.cg-fluid .cg-burger{display:block}
+.cg-fluid [data-pencil-name="Nav"]>[data-pencil-name="Links"]{display:none!important}
+.cg-fluid.cg-menu [data-pencil-name="Nav"]>[data-pencil-name="Links"]{display:flex!important;flex-direction:column;align-items:flex-start!important;gap:6px!important;position:absolute;top:calc(100% + 8px);left:var(--pd);right:var(--pd);padding:14px 18px;border-radius:22px;background:rgba(10,15,31,.96);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.cg-fluid.cg-menu [data-pencil-name="Links"]>div{padding:10px 4px;width:100%;font-size:16px!important}
+.cg-fluid.scrolled [data-pencil-name="Nav"]{left:12px;right:12px;padding:10px 16px!important}
+.cg-fluid [data-pencil-name="Nav"]{gap:12px}
+.cg-fluid [data-pencil-name="Nav"]>[data-pencil-name="Logo"]{margin-right:auto}
+.cg-sm [data-pencil-name="Nav CTA"]{display:none!important}
+.cg-sm [data-pencil-name="Nav"]>[data-pencil-name="Logo"]{width:132px!important;height:33px!important}
+
+/* hero */
+.cg-fluid [data-pencil-name="Hero"]{height:auto!important;padding-top:76px!important;padding-bottom:56px!important}
+.cg-fluid [data-pencil-name="Hero Body"]{flex-direction:column!important;align-items:stretch!important;height:auto!important;padding:28px var(--pd) 0!important;gap:44px!important}
+.cg-fluid [data-pencil-name="Hero Copy"]{width:100%!important}
+.cg-fluid [data-pencil-name="Headline"]{font-size:clamp(32px,7vw,50px)!important;width:100%!important}
+.cg-fluid [data-pencil-name="Subhead"]{font-size:16px!important;width:100%!important}
+.cg-fluid [data-pencil-name="Hero Team Image"]{width:100%!important;max-width:560px;height:auto!important;aspect-ratio:560/500;margin:0 auto}
+.cg-sm [data-pencil-name="Hero Team Image"] [data-pencil-name^="Glass Chip"]{display:none!important}
+.cg-fluid .cg-orbit{display:none!important}
+.cg-fluid [data-pencil-name="About Image"] [data-pencil-name="Years Badge"]{left:auto!important;top:auto!important;right:6px;bottom:-14px}
+.cg-fluid [data-pencil-name="Title Rule"]{width:100%!important;max-width:360px}
+.cg-fluid [data-pencil-name="Footer Bottom"]{width:100%!important}
+.cg-sm [data-pencil-name="Value"]{font-size:38px!important;letter-spacing:-1px!important}
+.cg-sm [data-pencil-name="Hero Team Image"] [data-pencil-name="Play Button"]{scale:.72;transform-origin:center}
+
+/* services */
+.cg-fluid [data-pencil-name="Row 1"],.cg-fluid [data-pencil-name="Row 2"]{flex-direction:column!important}
+.cg-fluid [data-pencil-name="Row 1"]>div,.cg-fluid [data-pencil-name="Row 2"]>div{width:100%!important;height:auto!important;min-height:240px;gap:32px}
+.cg-fluid [data-pencil-name="Row 1"]>div>[data-pencil-name="Bottom"],.cg-fluid [data-pencil-name="Row 2"]>div>[data-pencil-name="Bottom"]{width:100%!important}
+.cg-fluid [data-pencil-name="Services"]>div:not([data-pencil-name="Header"]){gap:20px}
+
+/* about */
+.cg-fluid [data-pencil-name="Care Guide Homepage"]>[data-pencil-name="About"]{flex-direction:column!important;align-items:stretch!important;gap:44px!important}
+.cg-fluid [data-pencil-name="About Image"]{width:100%!important;max-width:520px;height:auto!important;aspect-ratio:580/620;margin:0 auto;position:relative}
+.cg-fluid [data-pencil-name="About Copy"]{width:100%!important;height:auto!important}
+.cg-fluid [data-pencil-name="Serving Callout"]{width:100%!important}
+.cg-sm [data-pencil-name="Pillar Tiles"]{flex-direction:column!important}
+.cg-sm [data-pencil-name="Pillar Tiles"]>div{width:100%!important}
+.cg-sm [data-pencil-name="Years Badge"]{scale:.8}
+.cg-sm [data-pencil-name="Serving Line"]{font-size:17px!important}
+
+/* stats */
+.cg-fluid [data-pencil-name="Stats Row"]{flex-wrap:wrap!important;row-gap:28px!important}
+.cg-fluid [data-pencil-name="Stats Row"]>div{flex:1 1 38%!important;min-width:130px;width:auto!important}
+.cg-fluid [data-pencil-name="Value"]{font-size:clamp(40px,9vw,64px)!important}
+
+/* leadership */
+.cg-fluid [data-pencil-name="Leadership"]{flex-direction:column!important;align-items:stretch!important;gap:40px!important}
+.cg-fluid [data-pencil-name="Leadership"]>[data-pencil-name="Copy"]{width:100%!important;padding:28px!important}
+.cg-fluid [data-pencil-name="CEO Portrait"]{width:100%!important;max-width:420px;height:auto!important;aspect-ratio:1;margin:0 auto}
+.cg-fluid [data-pencil-name="Review Pagination"]{position:static!important;margin:0 auto!important}
+.cg-fluid [data-pencil-name="Quote"]{font-size:18px!important}
+
+/* why choose */
+.cg-fluid [data-pencil-name="Why Choose"]{flex-direction:column!important;align-items:stretch!important;gap:40px!important}
+.cg-fluid [data-pencil-name="Why Choose"]>[data-pencil-name="Copy"]{width:100%!important}
+.cg-fluid [data-pencil-name="Glass Stage"]{width:100%!important;height:auto!important;display:flex!important;flex-direction:column;gap:18px}
+.cg-fluid [data-pencil-name="Glass Stage"]>:not([data-pencil-name="Glass Tile"]){display:none!important}
+.cg-fluid [data-pencil-name="Glass Tile"]{position:static!important;width:100%!important;height:auto!important;flex-direction:row!important;align-items:center!important}
+.cg-fluid [data-pencil-name="Glass Tile"] [data-pencil-name="Label"]{width:auto!important;flex:1}
+
+/* culture: the whole card stack scales as one unit (--cz is set in JS) */
+.cg-fluid [data-pencil-name="Card Carousel"]{width:1280px!important;flex:none!important;zoom:var(--cz,1);margin-left:var(--cm,0px)}
+.cg-sm [data-pencil-name="Culture"]{overflow-x:clip!important}
+.cg-fluid [data-pencil-name="Carousel Controls"]{width:auto}
+
+/* careers */
+.cg-fluid [data-pencil-name="Careers"]{flex-direction:column!important;align-items:stretch!important;gap:40px!important}
+.cg-fluid [data-pencil-name="Requirement Cards"],.cg-fluid [data-pencil-name="Careers"]>[data-pencil-name="Copy"]{width:100%!important}
+.cg-fluid [data-pencil-name="Plus Vertical"],.cg-fluid [data-pencil-name="Plus Horizontal"]{display:none!important}
+.cg-sm [data-pencil-name="Requirement Cards"]>[data-pencil-name="Row"]{flex-direction:column!important}
+.cg-sm [data-pencil-name="Requirement Cards"] [data-pencil-name^="Card "]{width:100%!important}
+
+/* blog */
+.cg-fluid [data-pencil-name="Posts"]{flex-direction:column!important;gap:28px!important;padding-bottom:40px!important}
+.cg-fluid [data-pencil-name^="Post Card"]{width:100%!important}
+.cg-fluid [data-pencil-name^="Post Card"] [data-pencil-name="Glass Panel"]{width:calc(100% - 40px)!important}
+
+/* cta + footer */
+.cg-fluid [data-pencil-name="CTA"]{flex-direction:column!important;align-items:flex-start!important;gap:24px!important}
+.cg-fluid [data-pencil-name="CTA"] [data-pencil-name="Headline"]{font-size:clamp(30px,6vw,44px)!important}
+.cg-fluid [data-pencil-name="Footer"]{padding-top:56px!important;padding-bottom:28px!important}
+.cg-fluid [data-pencil-name="Newsletter Card"]{flex-direction:column!important;align-items:stretch!important;gap:22px!important;padding:28px 22px!important}
+.cg-fluid [data-pencil-name="Newsletter Card"] [data-pencil-name="Title"]{font-size:26px!important}
+.cg-fluid [data-pencil-name="Form"]{width:100%!important}
+.cg-fluid [data-pencil-name="Input Pill"]{flex-wrap:nowrap}
+.cg-fluid [data-pencil-name="Placeholder"]{flex:1!important;width:auto!important;min-width:0}
+.cg-fluid [data-pencil-name="Input Pill"] input{width:100%;min-width:0;flex:1}
+.cg-sm [data-pencil-name="Input Pill"]{flex-direction:column!important;align-items:stretch!important;border-radius:28px!important;padding:14px!important;gap:12px!important}
+.cg-sm [data-pencil-name="Subscribe Button"]{justify-content:center}
+.cg-fluid [data-pencil-name="Footer Top"]{flex-wrap:wrap!important;gap:32px!important}
+.cg-fluid [data-pencil-name="Footer Top"]>[data-pencil-name="About"]{width:100%!important;height:auto!important}
+.cg-fluid [data-pencil-name="Footer Top"]>div:not([data-pencil-name="About"]){flex:1 1 40%!important;width:auto!important}
+.cg-fluid [data-pencil-name="About Text"]{width:100%!important}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.cg-rv{opacity:1;translate:0 0;scale:1}.cg-w b{transform:none}}
