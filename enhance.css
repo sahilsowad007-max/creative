@@ -133,6 +133,10 @@ body.scrolled [data-pencil-name="Nav"]{top:14px;left:calc(var(--pd,80px) - 30px)
 @keyframes cg-turn1{from{rotate:0deg}to{rotate:360deg}}
 [data-pencil-name="Leadership"] [data-pencil-name="Quote"],[data-pencil-name="Leadership"] [data-pencil-name="Quote Detail"],[data-pencil-name="Leadership"] [data-pencil-name="Author"]{transition:opacity .26s,translate .26s}
 .cg-out{opacity:0!important;translate:0 10px}
+/* testimonial: card and client photo a bit smaller (desktop; the reflowed layouts size them themselves) */
+body:not(.cg-fluid) [data-pencil-name="Leadership"]{justify-content:space-between!important}
+body:not(.cg-fluid) [data-pencil-name="Leadership"]>[data-pencil-name="Copy"]{zoom:.9;width:660px!important;flex:none!important}
+body:not(.cg-fluid) [data-pencil-name="CEO Portrait"]{zoom:.8}
 /* testimonial glass card:tilts toward the pointer with a moving highlight */
 .cg-card{position:relative;transform-style:preserve-3d;transition:transform .3s ease-out,box-shadow .3s}
 .cg-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(460px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.55),transparent 55%);opacity:0;transition:opacity .35s;mix-blend-mode:soft-light}
